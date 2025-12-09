@@ -1,57 +1,123 @@
 using System;
 
-public class Program
+// --- CLASSE 1: ARMAZENAMENTO DE DADOS ---
+// Esta classe agora é pura. Não depende do Main.
+public class ArmazenadorDeMapa
 {
-    // Mapa do jogo
-    static char[][] mapa = new char[][]
+    // 'public' para que a classe ImprimiMapa e o Main possam ler/alterar
+    public static int mapaAtualIndex = 0; 
+    
+    // Posição do Jogador
+    public static int pY = 2;
+    public static int pX = 3;
+
+    public static char[][][] todosOsMapas = new char[][][]
     {
-        "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]".ToCharArray(),
-        "[]                                            []          []".ToCharArray(),
-        "[] P          []                              [] *        []".ToCharArray(),
-        "[]            []                              [][][][]    []".ToCharArray(),
-        "[]            []                                          []".ToCharArray(),
-        "[]        [][][]                                          []".ToCharArray(),
-        "[]                                                        []".ToCharArray(),
-        "[]                                                        []".ToCharArray(),
-        "[]                                    [][][][][]          []".ToCharArray(),
-        "[]    []                              []                  []".ToCharArray(),
-        "[]    [][][]                          []                  []".ToCharArray(),
-        "[]                                              [][][][]  []".ToCharArray(),
-        "[]                                              []        []".ToCharArray(),
-        "[]                                              [] *      []".ToCharArray(),
-        "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]".ToCharArray()
+        // --- MAPA 1: Prisão (Índice 0) ---
+        new char[][]
+        {
+            "[][][][][][][][][][][][][][][][][][][][][][][][][]" .ToCharArray(),
+            "[]      []     *           []   []   []   []    []" .ToCharArray(),
+            "[] P     }   []  C         []   []   []   []    []" .ToCharArray(),
+            "[][][][][]   []            [][]_[][]_[][]_[]    []" .ToCharArray(),
+            "[]      []   []                        C        []" .ToCharArray(), // } e _ representa a porta das celas
+            "[]       }   []               *                 []" .ToCharArray(), // * representa perigo
+            "[][][][][]   [][][]     [][][][][][][][][][][][][]" .ToCharArray(), // C represnta carcereiro
+            "[]      []                                      []" .ToCharArray(), // ) representa saída
+            "[]       }      *  []                 []        []" .ToCharArray(), // coordenada da saida Y=13 (Linha) e X=24 (Coluna).
+            "[][][][][]   C     []  C       []  *  []        []" .ToCharArray(), // coordenada do jogador Y=2 X=3                                                       
+            "[]                 []          []     []        []" .ToCharArray(),
+            "[]         []              *   []     [][][][][][]" .ToCharArray(),
+            "[]         [][][][][][][]      []    C          []" .ToCharArray(),
+            "[]                             []                )" .ToCharArray(),
+            "[][][][][][][][][][][][][][][][][][][][][][][][][]" .ToCharArray(),
+        },
+
+        // --- MAPA 2: Corredor (Índice 1) ---
+        new char[][]
+        {
+            "[][][][][][][][][][][][][][][][][][][][][][][][][]" .ToCharArray(), 
+            "[]         []           [] *              []    []" .ToCharArray(),
+            "[]   [][][][] C [][][][][]   []   [][][][][]  C  (" .ToCharArray(),   // ( representa saída 
+            "[]       []             []   [] C         []    []" .ToCharArray(),   // P representa ponto de partida
+            "[] * []      [][][][]   []   [][][][][] * [] *  []" .ToCharArray(),   // * representa perigo
+            "[]   [][][][][]    []   []           []   []    []" .ToCharArray(),   // C represnta carcereiro
+            "[]    C      [] *       []      C    []   C     []" .ToCharArray(),   // ) representa ENTRADA
+            "[]   [][][][][]   [][][][][][]    [][][][][][][][]" .ToCharArray(),   // localizão player y = 13 x = 2
+            "[]   []       []            []                  []" .ToCharArray(),   // saida y = 3 x = 25                                                     
+            "[]   [] [][][][][][][][] C  [][][][][][]   *    []" .ToCharArray(),
+            "[]   []   *   []  C   []         []      [][][] []" .ToCharArray(),
+            "[]   [][][]   []  []  [][][][]   []  [][][]  [] []" .ToCharArray(),
+            " ) P              []        []   *       []     []" .ToCharArray(),
+            "[][][][][][][][][][][][][][][][][][][][][][][][][]" .ToCharArray(),
+        },
+        
+        new char[][]
+    {
+        "[][][][][][][][][][][][][][][][][][][][][][][][][]  | ♣ - Árvore".ToCharArray(),
+        "[]                     ♣                         )  | ≈ - Água".ToCharArray(),
+        "[]  ♣                                ≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[]           ♣                    ≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[]                            ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[]      ♣                  ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[]                        ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[]               ♣        ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[]                        ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[]  ♣                     ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[]         ♣               ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[]                          ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[] P                ♣        ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[]     ♣                        ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈[]  |".ToCharArray(),
+        "[][][][][][][][][][][][][][][][][][][][][][][][][]  |".ToCharArray()
+    },
     };
+}
 
-    // Posição inicial do Jogador (P)
-    static int pY = 2;
-    static int pX = 3;
+// --- CLASSE 2: LÓGICA DE IMPRESSÃO ---
+// Funciona lendo os dados da classe anterior. Não sabe que o Main existe.
+public class ImprimiMapa
+{
+    public static void DesenharMapa()
+    {
+        // Acessa as variáveis estáticas da classe ArmazenadorDeMapa
+        char[][] mapaAtual = ArmazenadorDeMapa.todosOsMapas[ArmazenadorDeMapa.mapaAtualIndex];
 
+        try
+        {
+            Console.SetCursorPosition(0, 0);
+        }
+        catch
+        {
+            // Fallback caso o console não suporte cursor (ex: output simples)
+            Console.Clear();
+        }
+
+        // Título que indica qual mapa está sendo desenhado
+        Console.WriteLine($"========= Mapa C# (Nível {ArmazenadorDeMapa.mapaAtualIndex + 1}) =========");
+        
+        for (int i = 0; i < mapaAtual.Length; i++)
+        {
+            // Constrói uma string a partir do array de char e imprime a linha
+            Console.WriteLine(new string(mapaAtual[i]));
+        }
+    }
+}
+
+// --- CLASSE 3: EXECUÇÃO (MAIN) ---
+// Esta classe pode ser deletada ou trocada sem quebrar a lógica das classes acima.
+public class ExecucaoJogo
+{
     static void Main(string[] args)
     {
-        // Tenta esconder o cursor, mas ignora se der erro (alguns consoles não suportam)
         try { Console.CursorVisible = false; } catch { }
-            DesenharMapa();
-            
-    }
 
-    static void DesenharMapa()
-    {
-        // Tenta posicionar o cursor no 0,0 para não piscar a tela
-        try 
-        { 
-            Console.SetCursorPosition(0, 0); 
-        } 
-        catch 
-        { 
-            // Se der erro (ex: terminal online), usa Clear()
-            Console.Clear(); 
-        }
+        // Configura o estado inicial usando a classe de dados
+        ArmazenadorDeMapa.mapaAtualIndex = 2;
 
-        Console.WriteLine("========= Mapa C# =========");
+        // Chama a classe de impressão
+        ImprimiMapa.DesenharMapa(); 
         
-        for (int i = 0; i < mapa.Length; i++)
-        {
-            Console.WriteLine(new string(mapa[i]));
-        }
+        // Mantém a janela aberta (opcional, para visualização)
+        Console.ReadKey();
     }
 }
